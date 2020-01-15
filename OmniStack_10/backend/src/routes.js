@@ -4,6 +4,8 @@ const DevController = require("./controller/DevController");
 
 const routes = Router();
 
-routes.post('/devs', DevController.salvar);
+routes.get('/devs', DevController.index);
+routes.post('/devs', DevController.store);
+
 
 module.exports = routes;
