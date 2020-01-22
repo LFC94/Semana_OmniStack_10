@@ -6,14 +6,15 @@ import "./App.css"
 import "./SideBar.css"
 import "./main.css"
 
+import DevItem from "./components/DevItem";
 
 
 function App() {
-
+  const [devs, setDevs] = useState([]);
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
   const [github_username, setGithubUsername] = useState('');
-  const [thechs, setThechs] = useState('');
+  const [techs, setTechs] = useState('');
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -30,12 +31,30 @@ function App() {
         timeout: 30000,
       }
     );
-  })
+  }, [])
+
+  useEffect(() => {
+    async function loadDevs() {
+      const response = await api.get('/devs');
+      setDevs(response.data);
+    }
+    loadDevs();
+  }, []);
 
   async function handleAddDev(e) {
     e.preventDefault();
-    const resp = await api.post('/devs', github_username, thechs, latitude, longitude);
-    console.log(resp.data);
+    const resp = await api.post(
+      '/devs',
+      {
+        github_username,
+        techs,
+        latitude,
+        longitude
+      }
+    );
+    setGithubUsername("");
+    setTechs("");
+    setDevs([...devs, resp.data]);
   }
 
   return (
@@ -48,8 +67,8 @@ function App() {
             <input name="github_username" id="github_username" required value={github_username} onChange={e => setGithubUsername(e.target.value)} />
           </div>
           <div className="input-block">
-            <label htmlFor="thechs">Tecnologias</label>
-            <input name="thechs" id="thechs" required value={thechs} onChange={e => setThechs(e.target.value)} />
+            <label htmlFor="techs">Tecnologias</label>
+            <input name="techs" id="techs" required value={techs} onChange={e => setTechs(e.target.value)} />
           </div>
           <div className="input-group">
             <div className="input-block">
@@ -66,45 +85,13 @@ function App() {
       </aside>
       <main>
         <ul>
-          <li className="dev-item">
-            <header>
-              <img src="" alt="dev" />
-              <div className="user-info">
-                <strong>Nome</strong>
-                <span>JS, React Native</span>
-              </div>
-            </header>
-            <p>
-              The platform "win32" is incompatible with this module is an optional dependency and failed compatibility check. Excluding it from installation.
-            </p>
-            <a href="http://google.com" >Acessar Perfil</a>
-          </li>
-          <li className="dev-item">
-            <header>
-              <img src="" alt="dev" />
-              <div className="user-info">
-                <strong>Nome</strong>
-                <span>JS, React Native</span>
-              </div>
-            </header>
-            <p>
-              The platform "win32" is incompatible with this module is an optional dependency and failed compatibility check. Excluding it from installation.
-            </p>
-            <a href="http://google.com" >Acessar Perfil</a>
-          </li>
-          <li className="dev-item">
-            <header>
-              <img src="" alt="dev" />
-              <div className="user-info">
-                <strong>Nome</strong>
-                <span>JS, React Native</span>
-              </div>
-            </header>
-            <p>
-              The platform "win32" is incompatible with this module is an optional dependency and failed compatibility check. Excluding it from installation.
-            </p>
-            <a href="http://google.com" >Acessar Perfil</a>
-          </li>
+          {
+            devs.map(dev =>
+              (
+               <DevItem key={dev._id} dev={dev}/>
+              )
+            )
+          }
         </ul>
       </main>
     </div>
