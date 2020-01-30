@@ -38,7 +38,6 @@ function Main({ navigation }) {
                 params: {
                     latitude,
                     longitude,
-                    techs:''
                 }
             });
             console.log('1', resp.data);

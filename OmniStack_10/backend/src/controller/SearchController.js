@@ -5,15 +5,20 @@ const parseStringAsArray = require('../utils/parseStringAsArray');
 
 module.exports = {
     async index(req, res) {
-        console.log(req.query);
         let { latitude, longitude, techs } = req.query;
-        const techsArray = parseStringAsArray(techs);
+        let arraWhere = {};
 
-        const devs = await Dev.find(
-            {
+        if (techs != undefined) {
+            const techsArray = parseStringAsArray(techs);
+            Object.assign(arraWhere, {
                 techs: {
                     $in: techsArray,
-                },
+                }
+            })
+        }
+
+        if (latitude != undefined || longitude != undefined) {
+            Object.assign(arraWhere, {
                 location: {
                     $near: {
                         $geometry: {
@@ -23,7 +28,11 @@ module.exports = {
                         $maxDistance: 10000,
                     },
                 },
-            },
+            });
+        }
+
+        const devs = await Dev.find(
+            arraWhere
         )
 
         return res.json({ dev: devs });
