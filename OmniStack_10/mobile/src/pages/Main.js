@@ -8,6 +8,7 @@ import api from '../services/api';
 function Main({ navigation }) {
     const [devs, setDevs] = useState([]);
     const [currentRegion, setCurrentRegion] = useState(null);
+    const [techs, setTechs] = useState('');
     useEffect(() => {
         async function loadInitionPosition() {
             const { granted } = await requestPermissionsAsync();
@@ -32,17 +33,18 @@ function Main({ navigation }) {
 
     async function loadDevs() {
         const { latitude, longitude } = currentRegion;
-        console.log(1);
+        setDevs([])
         try {
             const resp = await api.get('/search', {
                 params: {
                     latitude,
                     longitude,
+                    techs
                 }
             });
-            console.log('1', resp.data);
-
-            setDevs(resp.data.dev);
+            if (resp.data) {
+                setDevs(resp.data);
+            }
 
 
         } catch (error) {
@@ -92,6 +94,8 @@ function Main({ navigation }) {
                     placeholderTextColor="#999"
                     autoCapitalize="words"
                     autoCorrect={false}
+                    value={techs}
+                    onChangeText={setTechs}
                 />
                 <TouchableOpacity style={style.loadButton} onPress={loadDevs}>
                     <FontAwesome5 name="search-location" size={20} color="#FFF" />
@@ -110,7 +114,7 @@ const style = StyleSheet.create({
         height: 54,
         borderRadius: 4,
         borderWidth: 4,
-        borderColor: '#FFF'
+        borderColor: '#CCC'
     },
     callout: {
         width: 260,

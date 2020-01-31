@@ -8,7 +8,7 @@ module.exports = {
         let { latitude, longitude, techs } = req.query;
         let arraWhere = {};
 
-        if (techs != undefined) {
+        if (techs != undefined && techs) {
             const techsArray = parseStringAsArray(techs);
             Object.assign(arraWhere, {
                 techs: {
@@ -17,7 +17,7 @@ module.exports = {
             })
         }
 
-        if (latitude != undefined || longitude != undefined) {
+        if (latitude != undefined && latitude && longitude != undefined && longitude) {
             Object.assign(arraWhere, {
                 location: {
                     $near: {
@@ -35,6 +35,6 @@ module.exports = {
             arraWhere
         )
 
-        return res.json({ dev: devs });
+        return res.json(devs);
     },
 }
